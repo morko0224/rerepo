@@ -19,11 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     // Fetch the post details
     $post_query = "SELECT * FROM posts WHERE id = $post_id";
     $post_result = mysqli_query($connection, $post_query);
-    $post_row = mysqli_fetch_assoc($post_result);
 
-    // Fetch comments for the post
-    $comments_query = "SELECT * FROM comments WHERE post_id = $post_id";
-    $comments_result = mysqli_query($connection, $comments_query);
+    if ($post_result && mysqli_num_rows($post_result) > 0) {
+        $post_row = mysqli_fetch_assoc($post_result);
+
+        // Fetch comments for the post
+        $comments_query = "SELECT * FROM comments WHERE post_id = $post_id";
+        $comments_result = mysqli_query($connection, $comments_query);
+    }
 }
 
 // Handle comments and file upload
@@ -61,24 +64,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
 </head>
 <body>
     <h1>View Bulletin Board Post</h1>
-    <h2><?php echo htmlspecialchars($post_row['title']); ?></h2>
-    <p><?php echo htmlspecialchars($post_row['content']); ?></p>
+    <?php if (isset($post_row)) { ?>
+        <h2><?php echo htmlspecialchars($post_row['title']); ?></h2>
+        <p><?php echo htmlspecialchars($post_row['content']); ?></p>
+    <?php } else { ?>
+        <p>Post not found.</p>
+    <?php } ?>
 
     <h2>Comments</h2>
-    <ul>
-        <?php while ($comment_row = mysqli_fetch_assoc($comments_result)) { ?>
-            <li>
-                <?php echo htmlspecialchars($comment_row['content']); ?>
-                <?php if (!empty($comment_row['file_path'])) { ?>
-                    <a href="<?php echo $comment_row['file_path']; ?>" target="_blank">Download File</a>
-                <?php } ?>
-                <?php if ($_SESSION['user_id'] == $comment_row['user_id']) { ?>
-                    <a href="delete_comment.php?id=<?php echo $comment_row['id']; ?>">Delete</a>
-                    <a href="edit_comment.php?id=<?php echo $comment_row['id']; ?>">Edit</a>
-                <?php } ?>
-            </li>
-        <?php } ?>
-    </ul>
+    <?php if (isset($comments_result) && mysqli_num_rows($comments_result) > 0) { ?>
+        <ul>
+            <?php while ($comment_row = mysqli_fetch_assoc($comments_result)) { ?>
+                <li>
+                    <?php echo htmlspecialchars($comment_row['content']); ?>
+                    <?php if (!empty($comment_row['file_path'])) { ?>
+                        <a href="<?php echo $comment_row['file_path']; ?>" target="_blank">Download File</a>
+                    <?php } ?>
+                    <?php if ($_SESSION['user_id'] == $comment_row['user_id']) { ?>
+                        <a href="delete_comment.php?id=<?php echo $comment_row['id']; ?>">Delete</a>
+                        <a href="edit_comment.php?id=<?php echo $comment_row['id']; ?>">Edit</a>
+                    <?php } ?>
+                </li>
+            <?php } ?>
+        </ul>
+    <?php } else { ?>
+        <p>No comments yet.</p>
+    <?php } ?>
 
     <form action="view_post.php?id=<?php echo $post_id; ?>" method="post" enctype="multipart/form-data">
         <textarea name="comment" rows="4" required></textarea>
