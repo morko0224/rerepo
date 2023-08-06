@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 session_start();
 
 $host = "localhost";
@@ -17,8 +15,15 @@ $post_id = $_GET['id']; // Get the post id from the URL
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     // Fetch the post details
-    $post_query = "SELECT * FROM posts WHERE id = $post_id";
-    $post_result = mysqli_query($connection, $post_query);
+    // Prepare and bind the query
+    $post_query = "SELECT * FROM posts WHERE id = ?";
+    $stmt = mysqli_prepare($connection, $post_query);
+    mysqli_stmt_bind_param($stmt, "i", $post_id);
+
+    // Execute the query
+    mysqli_stmt_execute($stmt);
+    $post_result = mysqli_stmt_get_result($stmt);
+
 
     if ($post_result && mysqli_num_rows($post_result) > 0) {
         $post_row = mysqli_fetch_assoc($post_result);
