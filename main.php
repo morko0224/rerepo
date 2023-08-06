@@ -1,3 +1,20 @@
+<?php
+session_start();
+
+$host = "localhost";
+$dbusername = "mika";
+$dbpassword = "qwerty12345";
+$database = "databass";
+
+$connection = mysqli_connect($host, $dbusername, $dbpassword, $database);
+if (!$connection) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+$sql = "SELECT * FROM posts";
+$result = mysqli_query($connection, $sql);
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,35 +24,34 @@
     <h1>Welcome to the Main Page</h1>
     <p>This is the main page content.</p>
 
-    <h2>Table of Contents</h2>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Content</th>
-            <th>Posted By</th>
-            <th>Comments</th>
-        </tr>
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { ?>
+        <form action="create_comment.php" method="post">
+            <input type="hidden" name="post_id" value="">
+            <textarea name="comment" rows="4" required></textarea>
+            <br>
+            <input type="submit" value="Add Comment">
+        </form>
+    <?php } else { ?>
+        <p>You need to <a href="login.php">login</a> to add comments.</p>
+    <?php } ?>
+
+    <h2>Bulletin Boards</h2>
+    <ul>
         <?php
         while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td><a href=\"view_post.php?id=" . $row['id'] . "\">" . htmlspecialchars($row['title']) . "</a></td>";
-            echo "<td>" . htmlspecialchars($row['content']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['username']) . "</td>";
-            echo "<td><a href=\"view_comments.php?id=" . $row['id'] . "\">View Comments</a></td>";
-            echo "</tr>";
+            echo "<li><a href=\"view_post.php?id=" . $row['id'] . "\">" . htmlspecialchars($row['title']) . "</a></li>";
         }
         ?>
-    </table>
+    </ul>
 
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { ?>
-        <p><a href="create_board.php">Create a New Post</a></p>
+        <p><a href="create_board.php">Create a New Bulletin Board</a></p>
         <p><a href="?logout">Logout</a></p>
     <?php } else { ?>
         <p><a href="login.php">Login</a></p>
     <?php } ?>
 
-    <p><a href="board_list.php">Go to Post List</a></p>
-
+    <p><a href="board_list.php">Go to Bulletin Board List</a></p>
 </body>
 </html>
 
