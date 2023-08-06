@@ -14,18 +14,13 @@ if (!$connection) {
 $post_id = $_GET['id']; // Get the post id from the URL
 
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
-    // Fetch the post details
-    // Prepare and bind the query
+
     $post_query = "SELECT * FROM posts WHERE id = ?";
     echo "Query: $post_query<br>"; // Print the query for debugging
     $stmt = mysqli_prepare($connection, $post_query);
     mysqli_stmt_bind_param($stmt, "i", $post_id);
     mysqli_stmt_execute($stmt);
-    //$post_result = mysqli_stmt_get_result($stmt);
 
-
-    // Execute the query
-    mysqli_stmt_execute($stmt);
     $post_result = mysqli_stmt_get_result($stmt);
 
 
@@ -43,19 +38,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
     $user_id = $_SESSION['user_id'];
     $content = mysqli_real_escape_string($connection, $_POST['comment']);
     $file_path = null;
-
-    // Handle file upload
     if (!empty($_FILES['fileToUpload']['name'])) {
+        $tempFilePath = $_FILES['fileToUpload']['tmp_name'];
         $target_dir = "uploads/";
-        $file_name = basename($_FILES['fileToUpload']['name']);
-        $file_path = $target_dir . $file_name;
 
-        if (move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $file_path)) {
-            echo "File uploaded successfully.";
+        if (is_uploaded_file($tempFilePath) && $_FILES['fileToUpload']['error'] === UPLOAD_ERR_OK) {
+            $target_dir = "uploads/";
+            $file_name = basename($_FILES['fileToUpload']['name']);
+            $file_path = $target_dir . $file_name;
+
+            if (move_uploaded_file($tempFilePath, $file_path)) {
+                echo "File uploaded successfully.";
+            } else {
+                echo "Sorry, there was an error moving the uploaded file.";
+            }
         } else {
-            echo "Sorry, there was an error uploading your file.";
+            echo "File upload failed or encountered an error.";
         }
-    }
+    }    
 
     $sql = "INSERT INTO comments (post_id, user_id, content, file_path) VALUES ('$post_id', '$user_id', '$content', '$file_path')";
     if (mysqli_query($connection, $sql)) {
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
         <h2><?php echo htmlspecialchars($post_row['title']); ?></h2>
         <p><?php echo htmlspecialchars($post_row['content']); ?></p>
     <?php } else { ?>
-        <p>Post not found.</p>
+A        <p>Post not found.</p>
     <?php } ?>
 
     <h2>Comments</h2>
