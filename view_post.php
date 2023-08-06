@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 
 $host = "localhost";
@@ -11,9 +13,9 @@ if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
-    $post_id = $_GET['id'];
-    
+$post_id = $_GET['id']; // Get the post id from the URL
+
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     // Fetch the post details
     $post_query = "SELECT * FROM posts WHERE id = $post_id";
     $post_result = mysqli_query($connection, $post_query);
@@ -35,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
         $target_dir = "uploads/";
         $file_name = basename($_FILES['fileToUpload']['name']);
         $file_path = $target_dir . $file_name;
-        
+
         if (move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $file_path)) {
             echo "File uploaded successfully.";
         } else {
