@@ -17,8 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     // Fetch the post details
     // Prepare and bind the query
     $post_query = "SELECT * FROM posts WHERE id = ?";
+    echo "Query: $post_query<br>"; // Print the query for debugging
     $stmt = mysqli_prepare($connection, $post_query);
     mysqli_stmt_bind_param($stmt, "i", $post_id);
+    mysqli_stmt_execute($stmt);
+    $post_result = mysqli_stmt_get_result($stmt);
+
 
     // Execute the query
     mysqli_stmt_execute($stmt);
