@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     $stmt = mysqli_prepare($connection, $post_query);
     mysqli_stmt_bind_param($stmt, "i", $post_id);
     mysqli_stmt_execute($stmt);
-    $post_result = mysqli_stmt_get_result($stmt);
+    //$post_result = mysqli_stmt_get_result($stmt);
 
 
     // Execute the query
