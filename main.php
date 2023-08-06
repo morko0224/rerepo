@@ -49,6 +49,7 @@ $result = mysqli_query($connection, $sql);
 
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { ?>
         <p><a href="create_board.php">Create a New Bulletin Board</a></p>
+        <p><a href="logout.php">Logout</a></p>
     <?php } else { ?>
         <p><a href="login.php">Login</a></p>
     <?php } ?>
