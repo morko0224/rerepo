@@ -65,10 +65,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
     <h2>Comments</h2>
     <ul>
         <?php while ($comment_row = mysqli_fetch_assoc($comments_result)) { ?>
-            <li><?php echo htmlspecialchars($comment_row['content']); ?></li>
-            <?php if (!empty($comment_row['file_path'])) { ?>
-                <li><a href="<?php echo $comment_row['file_path']; ?>" target="_blank">Download File</a></li>
-            <?php } ?>
+            <li>
+                <?php echo htmlspecialchars($comment_row['content']); ?>
+                <?php if (!empty($comment_row['file_path'])) { ?>
+                    <a href="<?php echo $comment_row['file_path']; ?>" target="_blank">Download File</a>
+                <?php } ?>
+                <?php if ($_SESSION['user_id'] == $comment_row['user_id']) { ?>
+                    <a href="delete_comment.php?id=<?php echo $comment_row['id']; ?>">Delete</a>
+                    <a href="edit_comment.php?id=<?php echo $comment_row['id']; ?>">Edit</a>
+                <?php } ?>
+            </li>
         <?php } ?>
     </ul>
 
