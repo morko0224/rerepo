@@ -20,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     $stmt = mysqli_prepare($connection, $post_query);
     mysqli_stmt_bind_param($stmt, "i", $post_id);
     mysqli_stmt_execute($stmt);
-
     $post_result = mysqli_stmt_get_result($stmt);
 
 
@@ -28,8 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
         $post_row = mysqli_fetch_assoc($post_result);
 
         // Fetch comments for the post
-        $comments_query = "SELECT * FROM comments WHERE post_id = $post_id";
-        $comments_result = mysqli_query($connection, $comments_query);
+        $comments_query = "SELECT * FROM comments WHERE post_id = ?";
+        $stmt = mysqli_prepare($connection, $comments_query);
+        mysqli_stmt_bind_param($stmt, "i", $post_id);
+        mysqli_stmt_execute($stmt);
+        $comments_result = mysqli_stmt_get_result($stmt);
     }
 }
 
