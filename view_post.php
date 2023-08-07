@@ -16,7 +16,6 @@ $post_id = $_GET['id']; // Get the post id from the URL
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
 
     $post_query = "SELECT * FROM posts WHERE id = ?";
-    echo "Query: $post_query<br>"; // Print the query for debugging
     $stmt = mysqli_prepare($connection, $post_query);
     mysqli_stmt_bind_param($stmt, "i", $post_id);
     mysqli_stmt_execute($stmt);
@@ -35,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     }
 }
 
-// Handle comments and file upload
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['comment'])) {
     $user_id = $_SESSION['user_id'];
     $content = mysqli_real_escape_string($connection, $_POST['comment']);
