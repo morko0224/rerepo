@@ -25,7 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($post_id)) {
     if ($post_result && mysqli_num_rows($post_result) > 0) {
         $post_row = mysqli_fetch_assoc($post_result);
 
-        // Fetch comments for the post
         $comments_query = "SELECT * FROM comments WHERE post_id = ?";
         $stmt = mysqli_prepare($connection, $comments_query);
         mysqli_stmt_bind_param($stmt, "i", $post_id);
